@@ -1,0 +1,14 @@
+{
+  "name": "shared-sounds",
+  "description": "com3103-projects-2023-24-booth-w",
+  "version": "0.0.1",
+  "author": "Booth-W",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4"
+  }
+}
