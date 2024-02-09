@@ -16,6 +16,5 @@ io.on("connection", (socket) => {
 
 });
 
-server.listen(8080, () => {
-	console.log("Server started on port 8080");
-});
+let port = process.argv[2] || 8080;
+server.listen(port);
