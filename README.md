@@ -13,7 +13,7 @@
 
 ## Gantt Chart
 
-![Gantt Chart](gantt-chart.webp)
+![Gantt Chart](gantt-chart.png)
 
 ## Abstract
 
