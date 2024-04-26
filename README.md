@@ -1,5 +1,16 @@
 # Melody Merge
 
+## Table of Contents
+
+- [Gantt Chart](#gantt-chart)
+- [Abstract](#abstract)
+- [Introduction](#introduction)
+  - [Project Requirements](#project-requirements)
+  - [Limitations](#limitations)
+  - [Research into Existing Solutions](#research-into-existing-solutions)
+    - [Shared Spotify](#shared-spotify)
+- [References](#references)
+
 ## Gantt Chart
 
 ![Gantt Chart](gantt-chart.webp)
