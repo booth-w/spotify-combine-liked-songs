@@ -18,18 +18,10 @@ async function addUser(token) {
 	$("body").append(`${name}: ${token}`);
 }
 
-window.addEventListener("message", (e) => {
+window.addEventListener("message", async (e) => {
 	let hash = JSON.parse(e.data);
 	if (hash.type == "access_token") {
-		let token;
-		((token_ = hash.access_token) => {
-			token = token_;
-			return $.ajax({
-				url: "https://api.spotify.com/v1/me",
-				headers: {
-					"Authorization": `Bearer ${token}`
-				}
-			});
-		})().then(addUser(token));
+		let token = hash.access_token;
+		addUser(token);
 	}
 }, false);
