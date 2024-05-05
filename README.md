@@ -12,11 +12,12 @@
 - [Development](#development)
   - [Server Setup](#server-setup)
     - [Socket.io](#socketio)
+  - [Spotify API](#spotify-api)
 - [References](#references)
 
 ## Gantt Chart
 
-![Gantt Chart](gantt-chart.png)
+![Gantt Chart](img/gantt-chart.png)
 
 ## Abstract
 
@@ -109,6 +110,95 @@ Each time a client connects to the server, a new socket ID will be generated and
 RBXy_47EwW0A7ZAIAAAB
 SZtiEIte23tHpPGgAAAD
 _DfJjVNzntmOxbadAAAF
+```
+
+### Spotify API
+
+To access the user's music data from Spotify, I will use the Spotify API. To do this, I will need to create a new Spotify application and get the client ID. I will also need to create a new redirect URI that will be used to redirect the user back to the application after they have signed in with their Spotify account.
+
+![Spotify Dashboard](img/spotify-dashboard.png)
+
+On the HTML page, there is a login button. When the user clicks on the button, they will be redirected to the Spotify login page.
+
+```html
+<button id="login">Login</button>
+```
+
+```js
+$("#login").click(() => {
+  let scopes = ["user-library-read"];
+  let redirectURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&show_dialog=true&redirect_uri=${encodeURIComponent(location.href+"callback.html")}&scope=${encodeURIComponent(scopes.join(" "))}&response_type=token`;
+  window.open(redirectURL, "");
+});
+```
+
+The user will be logged in using OAuth2.0 and will be redirected back to the application with an access token.
+`scopes` defines the permissions the token will have. In this case, the token will have read access to the user's library.
+The `redirectURL` is the URL that the user will be redirected to that will allow the user to login with their Spotify account.
+The URL has five parameters:
+
+- `client_id` is the client ID of the Spotify application.
+- `show_dialog` is set to `true` to show the login dialogue.
+- `redirect_uri` is the URL that the user will be redirected to after they have signed in with their Spotify account. In this case, it is /callback.html.
+- `scope` is for the permissions that the token will have.
+- `response_type` is set to `token` to get an access token.
+
+If the user is successfully logged in, they will be redirected to the callback page.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      (() => {
+        let hash = {};
+        window.location.hash.replace(/^#\/?/, "").split("&").forEach(parameter => {
+          let key = parameter.split("=")[0];
+          let value = parameter.split("=")[1];
+          hash[key] = value;
+        });
+        
+        if (hash.access_token) {
+          window.opener.postMessage(JSON.stringify({
+            type: "access_token",
+            access_token: hash.access_token,
+            expires_in: hash.expires_in || 0
+          }), location.origin+"/index.html");
+          window.close();
+        }
+      })();
+    </script>
+  </head>
+</html>
+```
+
+`window.location.hash` with return the part of the URL after and including the `#`. `replace` removes the `#` from the string and a `/` from the start if there is one. `split` will split the string into an array of strings at each `&`. `forEach` will loop through each element in the array. `split` will split the string into an array of strings at each `=` with the key being the first element in the array and the value being the second element in the array. The key and value is then added to the `hash` object.
+
+If the `access_token` is in the hash object, a message will be sent to `/index.html` with the access token and the expires in time. The window will then close.
+
+`index.html` will be listening for the `message` event. When the event is triggered, the access token will be used to get the user's name and print it to the page. This is done to confirm that the callback function has been implemented correctly and will be removed in later versions.
+
+```js
+window.addEventListener("message", async (e) => {
+  let hash = JSON.parse(e.data);
+  if (hash.type == "access_token") {
+    let token = hash.access_token;
+    addUser(token);
+  }
+}, false);
+```
+
+```js
+async function addUser(token) {
+  let name = await fetch("https://api.spotify.com/v1/me", {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }).then((res) => res.json()).then((data) => data.display_name);
+  $("button").remove();
+  $("body").append(`${name}: ${token}`);
+}
 ```
 
 ## References
