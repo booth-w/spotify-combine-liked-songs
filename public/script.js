@@ -18,6 +18,13 @@ async function addUser(token) {
 	$("body").append(`${name}: ${token}`);
 }
 
+// create room
+$("#createRoom").click(() => {
+	let room = Math.random().toString(36).substring(2);
+	$("body").append(`Created room ${room}`);
+	socket.emit("join", room);
+});
+
 window.addEventListener("message", async (e) => {
 	let hash = JSON.parse(e.data);
 	if (hash.type == "access_token") {

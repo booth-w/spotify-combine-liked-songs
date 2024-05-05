@@ -13,7 +13,10 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-
+	socket.on("join", (room) => {
+		socket.join(room);
+		console.log(`Socket ${socket.id} joined room ${room}`);
+	});
 });
 
 let port = process.argv[2] || 8080;
