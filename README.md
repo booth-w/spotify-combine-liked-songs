@@ -72,8 +72,24 @@ The server can either listen on port 8080 or the user can specify a port when st
 
 ```js
 let port = process.argv[2] || 8080;
+
+// validate port
+if (isNaN(port) || port < 1 || port > 65535) {
+  console.log("Invalid port");
+  process.exit(1);
+}
+
 server.listen(port);
+
+// check if port is in use
+server.on("error", (err) => {
+  if (err.code == "EADDRINUSE") {
+    console.log(`Port ${port} is in use`);
+  }
+});
 ```
+
+If the user specifies a port, it is then checked to see if it is a valid port number. If it is not, an error will be thrown and the process will exit. The server listens for an error. If the code of the error it catches is `EADDRINUSE`, it will print to the console that the port is in use.
 
 To provide the client with the required files, I will create a new directory called `public` and add the required files to it.
 
