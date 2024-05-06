@@ -13,9 +13,15 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-	socket.on("join", (room) => {
-		socket.join(room);
-		console.log(`Socket ${socket.id} joined room ${room}`);
+	socket.on("create", (room) => {
+		let ID;
+		do {
+			ID = Array(8).fill().map(() => "0123456789abcdefghigklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]).join("");
+		} while (io.sockets.adapter.rooms.has(ID));
+		
+		socket.join(ID);
+		socket.emit("create res", ID);
+		console.log(`Socket ${socket.id} created room ${room}`);
 	});
 });
 

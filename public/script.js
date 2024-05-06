@@ -20,9 +20,13 @@ async function addUser(token) {
 
 // create room
 $("#createRoom").click(() => {
-	let room = Math.random().toString(36).substring(2);
-	$("body").append(`Created room ${room}`);
-	socket.emit("join", room);
+	socket.emit("create").on("create res", (room) => {
+		$("body").append(`<div id="room-id">Created room ${room} (Click to copy)</div>`);
+		$("#room-id").click(() => {
+			navigator.clipboard.writeText(room);
+			$("#room-id").text(`Created room ${room} (Copied)`);
+		});
+	});
 });
 
 window.addEventListener("message", async (e) => {
