@@ -15,6 +15,7 @@
   - [Spotify API](#spotify-api)
   - [Socket.io Rooms](#socketio-rooms)
     - [Creating a Room](#creating-a-room)
+    - [Joining a Room](#joining-a-room)
 - [References](#references)
 
 ## Gantt Chart
@@ -261,6 +262,50 @@ io.on("connection", (socket) => {
 ```
 
 ![Create Room](img/create-room.png)
+
+#### Joining a Room
+
+When the user joins a room, the server will check if the room exists. If the room exists, the user will be added to the room. If the room does not exist, the user will be sent an error message.
+
+Client
+
+```js
+$("#joinRoom").click(() => {
+  let room = prompt("Enter room ID");
+
+  if (!/^[a-z0-9]{8}$/.test(room)) {
+    alert("Invalid room ID");
+    return;
+  }
+  
+  socket.emit("join", room).on("join res", (res) => {
+    if (res == "success") {
+      $("body").text(`Joined room ${room}`);
+    } else {
+      $("body").text(`Failed to join room ${room}`);
+    }
+  });
+});
+```
+
+Before sending the room ID to the server, the client will check if the room ID could exist by checking it against the regular expression `/^[a-z0-9]{8}$/`. This will check if the room ID is 8 characters long and only contains lowercase letters and numbers.
+
+If the room number is valid, it will be sent to the server and the server will check if the room exists or not
+
+Server
+
+```js
+socket.on("join", (room) => {
+  if (io.sockets.adapter.rooms.has(room)) {
+    socket.join(room);
+    socket.emit("join res", "success");
+    console.log(`Socket ${socket.id} joined room ${room}`);
+  } else {
+    socket.emit("join res", "fail");
+    console.log(`Socket ${socket.id} failed to join room ${room}`);
+  }
+});
+```
 
 ## References
 

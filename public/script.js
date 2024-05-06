@@ -18,7 +18,6 @@ async function addUser(token) {
 	$("body").append(`${name}: ${token}`);
 }
 
-// create room
 $("#createRoom").click(() => {
 	socket.emit("create").on("create res", (room) => {
 		$("body").append(`<div id="room-id">Created room ${room} (Click to copy)</div>`);
@@ -26,6 +25,23 @@ $("#createRoom").click(() => {
 			navigator.clipboard.writeText(room);
 			$("#room-id").text(`Created room ${room} (Copied)`);
 		});
+	});
+});
+
+$("#joinRoom").click(() => {
+	let room = prompt("Enter room ID");
+
+	if (!/^[a-z0-9]{8}$/.test(room)) {
+		alert("Invalid room ID");
+		return;
+	}
+	
+	socket.emit("join", room).on("join res", (res) => {
+		if (res == "success") {
+			$("body").text(`Joined room ${room}`);
+		} else {
+			$("body").text(`Failed to join room ${room}`);
+		}
 	});
 });
 
