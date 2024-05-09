@@ -39,6 +39,11 @@ io.on("connection", (socket) => {
 		}
 	});
 
+	socket.on("disconnect", () => {
+		console.log(`Socket ${socket.id} disconnected`);
+		roomUpdate();
+	});
+
 	socket.on("login", (data) => {
 		socket.spotifyID = data[0];
 		socket.name = data[1];
@@ -48,6 +53,7 @@ io.on("connection", (socket) => {
 
 	function roomUpdate() {
 		let roomMembers = io.sockets.adapter.rooms.get(socket.room);
+		if (!roomMembers) return;
 
 		let data = {}
 		for (let member of roomMembers) {
