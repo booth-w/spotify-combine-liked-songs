@@ -406,6 +406,17 @@ socket.on("song data", (data) => {
 });
 ```
 
+I have also changed it so you must be in a room before you can request the song data.
+
+Client
+
+```js
+if (!isInRoom) {
+  alert("You need to join a room first");
+  return;
+}
+```
+
 ## References
 
 Competition and Markets Authority. (2023, November 29). _Music and streaming final report_. <https://assets.publishing.service.gov.uk/media/6384f43ee90e077898ccb48e/Music_and_streaming_final_report.pdf>
