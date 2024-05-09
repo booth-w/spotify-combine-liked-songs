@@ -20,25 +20,48 @@ io.on("connection", (socket) => {
 		} while (io.sockets.adapter.rooms.has(ID));
 		
 		socket.join(ID);
+		socket.room = ID;
 		socket.emit("create res", ID);
 		console.log(`Socket ${socket.id} created room ${ID}`);
+		roomUpdate();
 	});
 
 	socket.on("join", (room) => {
 		if (io.sockets.adapter.rooms.has(room)) {
 			socket.join(room);
+			socket.room = room;
 			socket.emit("join res", "success");
 			console.log(`Socket ${socket.id} joined room ${room}`);
+			roomUpdate();
 		} else {
 			socket.emit("join res", "fail");
 			console.log(`Socket ${socket.id} failed to join room ${room}`);
 		}
 	});
 
-	socket.on("song data", (data) => {
+	socket.on("login", (data) => {
 		socket.spotifyID = data[0];
-		socket.songData = data[1];
+		socket.name = data[1];
+		console.log(`Socket ${socket.id} logged in as ${socket.name}`);
+		roomUpdate();
+	});
+
+	function roomUpdate() {
+		let roomMembers = io.sockets.adapter.rooms.get(socket.room);
+
+		let data = {}
+		for (let member of roomMembers) {
+			let memberSocket = io.sockets.sockets.get(member);
+			data[memberSocket.id] = [memberSocket.spotifyID, memberSocket.name, memberSocket.songData];
+		}
+
+		io.to(socket.room).emit("room update", data);
+	}
+
+	socket.on("song data", (songs) => {
+		socket.songData = songs;
 		console.log(socket.spotifyID, socket.songData);
+		roomUpdate();
 	});
 });
 

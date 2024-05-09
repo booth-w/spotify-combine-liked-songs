@@ -17,7 +17,8 @@ async function getUserID(token) {
 	}).then((res) => res.json()).then((data) => [data.id, data.display_name]);
 
 	$(".login-notice").text(`Logged in as ${name}`);
-	
+	socket.emit("login", [userID, name]);
+
 	// replace login button with get song data button
 	$("#login").replaceWith(`<button id="getSongData">Get Song Data</button>`);
 	$("#getSongData").click(async () => {
@@ -27,7 +28,7 @@ async function getUserID(token) {
 		}
 		let songs = await getSongs(token, `https://api.spotify.com/v1/me/tracks?limit=50`)
 		$("#getSongData").text("Get Song Data (Done)");
-		socket.emit("song data", [userID, songs]);
+		socket.emit("song data", songs);
 	});
 }
 
@@ -74,6 +75,15 @@ $("#joinRoom").click(() => {
 			$(".room-notice").text(`Failed to join room ${room}`);
 		}
 	});
+});
+
+socket.on("room update", (data) => {
+	$(".room-members").empty();
+	for (let [id, [spotifyID, name, songData]] of Object.entries(data)) {
+		if (name) {
+			$(".room-members").append(`<div>${name} ${songData ? `- ${songData.length} Songs`: ""}</div>`);
+		}
+	}
 });
 
 window.addEventListener("message", async (e) => {
