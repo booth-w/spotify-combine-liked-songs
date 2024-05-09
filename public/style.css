@@ -1,0 +1,28 @@
+:root {
+	--bg-primary: #2E3440;
+	--bg-secondary: #3B4252;
+	--text-primary: #ECEFF4;
+	--button-primary: #434C5E;
+	--button-secondary: #4C566A;
+}
+
+body {
+	background-color: var(--bg-primary);
+	color: var(--text-primary);
+	font-family: "Source Sans Pro", serif;
+}
+
+button {
+	background-color: var(--button-primary);
+	color: var(--text-primary);
+	border: none;
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+}
+button:hover {
+	background-color: var(--button-secondary);
+}
+
+.room-create-notice {
+	cursor: pointer;
+}
