@@ -34,6 +34,12 @@ io.on("connection", (socket) => {
 			console.log(`Socket ${socket.id} failed to join room ${room}`);
 		}
 	});
+
+	socket.on("song data", (data) => {
+		socket.spotifyID = data[0];
+		socket.songData = data[1];
+		console.log(socket.spotifyID, socket.songData);
+	});
 });
 
 let port = process.argv[2] || 8080;

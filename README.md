@@ -16,6 +16,9 @@
   - [Socket.io Rooms](#socketio-rooms)
     - [Creating a Room](#creating-a-room)
     - [Joining a Room](#joining-a-room)
+  - [CSS](#css)
+    - [Nord Theme](#nord-theme)
+  - [Getting Spotify Data](#getting-spotify-data)
 - [References](#references)
 
 ## Gantt Chart
@@ -235,10 +238,10 @@ Client
 ```js
 $("#createRoom").click(() => {
   socket.emit("create").on("create res", (room) => {
-    $("body").append(`<div id="room-id">Created room ${room} (Click to copy)</div>`);
-    $("#room-id").click(() => {
+    $(".room-notice").html(`<div class="room-create-notice">Created room ${room} (Click to copy)</div>`);
+    $(".room-create-notice").click(() => {
       navigator.clipboard.writeText(room);
-      $("#room-id").text(`Created room ${room} (Copied)`);
+      $(".room-create-notice").text(`Created room ${room} (Copied)`);
     });
   });
 });
@@ -273,16 +276,17 @@ Client
 $("#joinRoom").click(() => {
   let room = prompt("Enter room ID");
 
+  if (room == null) return;
   if (!/^[a-z0-9]{8}$/.test(room)) {
     alert("Invalid room ID");
     return;
   }
-  
+
   socket.emit("join", room).on("join res", (res) => {
     if (res == "success") {
-      $("body").text(`Joined room ${room}`);
+      $(".room-notice").text(`Joined room ${room}`);
     } else {
-      $("body").text(`Failed to join room ${room}`);
+      $(".room-notice").text(`Failed to join room ${room}`);
     }
   });
 });
@@ -307,6 +311,101 @@ socket.on("join", (room) => {
 });
 ```
 
+### CSS
+
+```css
+:root {
+  --bg-primary: #2E3440;
+  --bg-secondary: #3B4252;
+  --text-primary: #ECEFF4;
+  --button-primary: #434C5E;
+  --button-secondary: #4C566A;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: "Source Sans Pro", serif;
+}
+
+button {
+  background-color: var(--button-primary);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+button:hover {
+  background-color: var(--button-secondary);
+}
+
+.room-create-notice {
+  cursor: pointer;
+}
+```
+
+For this website, I will be using the font Source Sans Pro. To use the font, I will add the following link to the head of the HTML file:
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+```
+
+#### Nord Theme
+
+The application will have two themes: light and dark. The light theme will be based on the Nord theme. The Nord theme is a color scheme that is used in many popular applications like Visual Studio Code, Vim, and Emacs (Nord, n.d.). It also has a GTK theme -- a cross-platform widget toolkit for creating graphical user interfaces (Lara, 2024).
+
+### Getting Spotify Data
+
+To get the user's music data, I will use the Spotify API. The API has an endpoint that will return the user's saved tracks. The endpoint is `https://api.spotify.com/v1/me/tracks` (Spotify, n.d.-c). This returns a list of up to 50 tracks that the user has saved. It is not possible to get more than 50 tracks at a time so the response is not too large. Because of this, the response includes a url with an offset to get the next 50 tracks.
+
+Client
+
+```js
+async function getUserID(token) {
+  let [userID, name] = await fetch("https://api.spotify.com/v1/me", {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }).then((res) => res.json()).then((data) => [data.id, data.display_name]);
+
+  $(".login-notice").text(`Logged in as ${name}`);
+  
+  // replace login button with get song data button
+  $("#login").replaceWith(`<button id="getSongData">Get Song Data</button>`);
+  $("#getSongData").click(async () => {
+    let songs = await getSongs(token, `https://api.spotify.com/v1/me/tracks?limit=50`)
+    $("#getSongData").text("Get Song Data (Done)");
+    socket.emit("song data", [userID, songs]);
+  });
+}
+
+async function getSongs(token, url, songs = []) {
+  return await fetch(url, {
+    "method": "GET",
+    "headers": {
+      "Authorization": `Bearer ${token}`
+    }
+  }).then((res) => res.json()).then(async (data) => {
+    songs.push(...data.items.map((item) => item.track.id));
+    let percent = Math.round(songs.length / data.total * 100);
+    $("#getSongData").text(`Get Song Data (${percent}%)`);
+    if (data.next) await getSongs(token, data.next, songs);
+    return songs;
+  });
+}
+```
+
+Server
+
+```js
+socket.on("song data", (data) => {
+  socket.spotifyID = data[0];
+  socket.songData = data[1];
+  console.log(socket.spotifyID, socket.songData);
+});
+```
+
 ## References
 
 Competition and Markets Authority. (2023, November 29). _Music and streaming final report_. <https://assets.publishing.service.gov.uk/media/6384f43ee90e077898ccb48e/Music_and_streaming_final_report.pdf>
@@ -315,4 +414,10 @@ Spotify. (n.d.-a). _About Spotify_. <https://newsroom.spotify.com/company-info/>
 
 Spotify. (n.d.-b). _Quota modes_. <https://developer.spotify.com/documentation/web-api/concepts/quota-modes/>
 
+Spotify. (n.d.-c). _Get User's Saved Tracks_. <https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks/>
+
 Vildal, P. (2021, April). _Shared Spotify_. GitHub. <https://github.com/paulvidal/shared-spotify/>
+
+Nord. (n.d.) _Nord Ports_. <https://www.nordtheme.com/ports>
+
+Lara, E. (2024, April 29). _Nordic_. <https://github.com/EliverLara/Nordic>
