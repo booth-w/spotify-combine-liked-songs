@@ -9,6 +9,7 @@
   - [Limitations](#limitations)
   - [Research into Existing Solutions](#research-into-existing-solutions)
     - [Shared Spotify](#shared-spotify)
+  - [Legal and Ethical](#legal-and-ethical)
 - [Development](#development)
   - [Server Setup](#server-setup)
     - [Socket.io](#socketio)
@@ -57,6 +58,11 @@ The aim of this project is to create a web application that will allow users to 
 #### Shared Spotify
 
 There is not a way to do what this project will solve using first-party software, however, there is an open-source third-party website developed by Paul Vidal called Shared Spotify that allows users to join a room and compare their music data to create a playlist with the songs that they have in common and works with both Spotify and Apple Music. It was make with Go for the backend, JavaScript for the frontend, and hosted with AWS. Shared Spotify does not allow the user to make a custom title or add a cover image -- instead generating one automatically. The website adds all of the songs to a playlist instead of letting the user choose what should and should not get added (Vildal, 2021).
+
+### Legal and Ethical
+
+- The application must comply with the Spotify Developer Terms of Service (Spotify, 2023a) and the Spotify Developer Policy (Spotify, 2023b). This includes not using the Spotify API to create a competing music streaming service, not using the Spotify API to create a service that allows users to download music for offline listening, and not using the Spotify API to create a service that allows users to listen to music without ads.
+- The application must also comply with the General Data Protection Regulation (GDPR) and the Data Protection Act (2018). This means user's data must not be stored for longer than necessary, must be stored securely, and must not be shared with third parties without the user's consent.
 
 ## Development
 
@@ -487,6 +493,10 @@ Spotify. (n.d.-a). _About Spotify_. <https://newsroom.spotify.com/company-info/>
 Spotify. (n.d.-b). _Quota modes_. <https://developer.spotify.com/documentation/web-api/concepts/quota-modes/>
 
 Spotify. (n.d.-c). _Get User's Saved Tracks_. <https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks/>
+
+Spotify. (2023a, May 8). _Spotify Developer Terms_. <https://developer.spotify.com/terms/>
+
+Spotify. (2023a, May 8). _Spotify Developer Policy_. <https://developer.spotify.com/policy/>
 
 Vildal, P. (2021, April). _Shared Spotify_. GitHub. <https://github.com/paulvidal/shared-spotify/>
 
