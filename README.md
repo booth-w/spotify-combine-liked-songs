@@ -486,7 +486,7 @@ When a user in the room logs into Spotify, their name will be added to the on-sc
 
 ## References
 
-Competition and Markets Authority. (2023, November 29). _Music and streaming final report_. <https://assets.publishing.service.gov.uk/media/6384f43ee90e077898ccb48e/Music_and_streaming_final_report.pdf>
+Competition and Markets Authority. (2023, November 29). _Music and streaming final report_. CMA. <https://assets.publishing.service.gov.uk/media/6384f43ee90e077898ccb48e/Music_and_streaming_final_report.pdf>
 
 Spotify. (n.d.-a). _About Spotify_. <https://newsroom.spotify.com/company-info/>
 
@@ -502,4 +502,4 @@ Vildal, P. (2021, April). _Shared Spotify_. GitHub. <https://github.com/paulvida
 
 Nord. (n.d.) _Nord Ports_. <https://www.nordtheme.com/ports>
 
-Lara, E. (2024, April 29). _Nordic_. <https://github.com/EliverLara/Nordic>
+Lara, E. (2024, April 29). _Nordic_. GitHub. <https://github.com/EliverLara/Nordic>
