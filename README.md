@@ -19,6 +19,7 @@
   - [CSS](#css)
     - [Nord Theme](#nord-theme)
   - [Getting Spotify Data](#getting-spotify-data)
+  - [Room member list](#room-members-list)
 - [References](#references)
 
 ## Gantt Chart
@@ -416,6 +417,66 @@ if (!isInRoom) {
   return;
 }
 ```
+
+### Room Members List
+
+I have added a list of members in the room. When a user joins a room and signs in, their name will be added to the list. When a user leaves the room, their name will be removed from the list.
+
+Server
+
+```js
+socket.on("disconnect", () => {
+  console.log(`Socket ${socket.id} disconnected`);
+  roomUpdate();
+});
+
+socket.on("login", (data) => {
+  socket.spotifyID = data[0];
+  socket.name = data[1];
+  console.log(`Socket ${socket.id} logged in as ${socket.name}`);
+  roomUpdate();
+});
+```
+
+This is done by creating a new function called `roomUpdate` that will get the members of the room and send the data to the clients. This is called at the end of the events `join`, `create`, `disconnect`, the new `login`, and the updated `song data`.
+
+```js
+function roomUpdate() {
+  let roomMembers = io.sockets.adapter.rooms.get(socket.room);
+  if (!roomMembers) return;
+
+  let data = {}
+  for (let member of roomMembers) {
+    let memberSocket = io.sockets.sockets.get(member);
+    data[memberSocket.id] = [memberSocket.spotifyID, memberSocket.name, memberSocket.songData];
+  }
+
+  io.to(socket.room).emit("room update", data);
+}
+
+socket.on("song data", (songs) => {
+  socket.songData = songs;
+  console.log(socket.spotifyID, socket.songData);
+  roomUpdate();
+});
+```
+
+Client
+
+```js
+socket.on("room update", (data) => {
+  $(".room-members").empty();
+  for (let [id, [spotifyID, name, songData]] of Object.entries(data)) {
+    if (name) {
+      $(".room-members").append(`<div>${name} ${songData ? `- ${songData.length} Songs`: ""}</div>`);
+    }
+  }
+});
+```
+
+When a user in the room logs into Spotify, their name will be added to the on-screen list. When the user gets their song data, the number of songs they have will be added next to their name.
+
+![Room Members](img/room-members.png)
 
 ## References
 
