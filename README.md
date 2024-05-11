@@ -360,7 +360,7 @@ For this website, I will be using the font Source Sans Pro. To use the font, I w
 
 #### Nord Theme
 
-The application will have two themes: light and dark. The light theme will be based on the Nord theme. The Nord theme is a color scheme that is used in many popular applications like Visual Studio Code, Vim, and Emacs (Nord, n.d.). It also has a GTK theme -- a cross-platform widget toolkit for creating graphical user interfaces (Lara, 2024).
+The application will have two themes: light and dark. The themes will be based on the Nord theme. The Nord theme is a color scheme that is used in many popular applications like Visual Studio Code, Vim, and Emacs (Nord, n.d.). It also has a GTK theme -- a cross-platform widget toolkit for creating graphical user interfaces (Lara, 2024).
 
 ### Getting Spotify Data
 
@@ -569,7 +569,7 @@ Client
 }
 ```
 
-A modal will be created when a user clicks the `Create Playlist` button. The modal will have an input for the playlist name, a list of the songs that the users have in common, and a button to create the playlist. The playlist name will have a placeholder name with a list of the users in the room separated by commas if there are more than two members. If there are, the last one will have and "and" before their name. This was tested by creating a test function in a separate environment and testing it with different lengths of arrays.
+A modal will be created when a user clicks the `Create Playlist` button. The modal will have an input for the playlist name, a list of the songs that the users have in common, and a button to create the playlist. The playlist name will have a placeholder name with a list of the users in the room separated by commas if there are more than two members. If there are, the last one will have an "and" before their name. This was tested by creating a test function in a separate environment and testing it with different lengths of arrays.
 
 ```js
 function playlistNameTest(arr) {
