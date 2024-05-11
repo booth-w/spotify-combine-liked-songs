@@ -69,6 +69,12 @@ io.on("connection", (socket) => {
 		console.log(socket.spotifyID, socket.songData);
 		roomUpdate();
 	});
+
+	socket.on("merge songs", () => {
+		let validMembers = [...io.sockets.adapter.rooms.get(socket.room)].filter(member => io.sockets.sockets.get(member).songData);
+		let songs = [...validMembers].map(roomMember => io.sockets.sockets.get(roomMember).songData).reduce((a, b) => a.filter(c => b.includes(c)));
+		socket.emit("merge songs", [validMembers.map(a => io.sockets.sockets.get(a).name), songs]);
+	});
 });
 
 let port = process.argv[2] || 8080;

@@ -21,6 +21,7 @@
     - [Nord Theme](#nord-theme)
   - [Getting Spotify Data](#getting-spotify-data)
   - [Room member list](#room-members-list)
+  - [Create Playlist](#create-playlist)
 - [References](#references)
 
 ## Gantt Chart
@@ -211,7 +212,7 @@ If the `access_token` is in the hash object, a message will be sent to `/index.h
 window.addEventListener("message", async (e) => {
   let hash = JSON.parse(e.data);
   if (hash.type == "access_token") {
-    let token = hash.access_token;
+    token = hash.access_token;
     addUser(token);
   }
 }, false);
@@ -368,7 +369,7 @@ To get the user's music data, I will use the Spotify API. The API has an endpoin
 Client
 
 ```js
-async function getUserID(token) {
+async function addUser(token) {
   let [userID, name] = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",
     headers: {
@@ -483,6 +484,221 @@ socket.on("room update", (data) => {
 When a user in the room logs into Spotify, their name will be added to the on-screen list. When the user gets their song data, the number of songs they have will be added next to their name.
 
 ![Room Members](img/room-members.png)
+
+### Create Playlist
+
+When all of the users in the room have signed in and have their song data, the server will compare the song data of each user and create a new playlist with the songs that they have in common.
+
+Client
+
+```html
+<div class="body">
+  <button id="login">Login</button>
+  <button id="createRoom">Create Room</button>
+  <button id="joinRoom">Join Room</button>
+  <button id="createPlaylist">Create Playlist</button>
+  <div class="login-notice"></div>
+  <div class="room-notice"></div>
+  <div class="room-members"></div>
+</div>
+<div class="create-playlist-modal">
+  <div class="create-playlist-modal-content">
+    <span class="close">&times;</span>
+    <div class="modal-title">Create Playlist</div>
+    <span>Playlist Name: </span><input type="text" id="playlistName">
+    <div class="songs"></div>
+    <button class="create-playlist-button">Create</button>
+  </div>
+</div>
+```
+
+```css
+#createPlaylist {
+  display: none;
+}
+
+.create-playlist-modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding-top: 100px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.create-playlist-modal-content {
+  background-color: var(--bg-secondary);
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  font-size: 1.2em;
+}
+.create-playlist-modal-content > input {
+  width: 100%;
+}
+.modal-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+.songs {
+  margin: 20px 0;
+}
+.song {
+  display: flex;
+  margin: 10px 0;
+  width: 100%;
+}
+.song img {
+  margin-right: 10px;
+}
+.song input {
+  margin-left: auto;
+}
+.close {
+  color: #ccc;
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+}
+```
+
+A modal will be created when a user clicks the `Create Playlist` button. The modal will have an input for the playlist name, a list of the songs that the users have in common, and a button to create the playlist. The playlist name will have a placeholder name with a list of the users in the room separated by commas if there are more than two members. If there are, the last one will have and "and" before their name. This was tested by creating a test function in a separate environment and testing it with different lengths of arrays.
+
+```js
+function playlistNameTest(arr) {
+  return arr.length <= 2 ? arr.join(" and ") : `${arr.slice(0, -1).join(", ")}, and ${arr.slice(-1)}`
+}
+
+playlistNameTest(["test"])
+'test'
+playlistNameTest(["test", "test2"])
+'test and test2'
+playlistNameTest(["test", "test2", "test3"])
+'test, test2, and test3'
+```
+
+![Create Playlist Modal](img/create-playlist-modal.png)
+
+When the user clicks the `Create Playlist` button, the modal will be shown and the background blurred. When the user clicks the `×` button, the modal will be hidden and the background will be unblurred.
+
+```js
+$("#createPlaylist").click(() => {
+  socket.emit("merge songs").on("merge songs", (res) => {
+    $(".create-playlist-modal").show();
+    $(".body").css("filter", "blur(2px)");
+
+    $("#playlistName").attr("placeholder", `Shared Playlist of ${res[0].length <= 2 ? res[0].join(" and ") : `${res[0].slice(0, -1).join(", ")}, and ${res[0].slice(-1)}`}`);
+    
+    $(".songs").empty();
+    res[1].forEach(async song => {
+      songData = await fetch(`https://api.spotify.com/v1/tracks/${song}`, {
+        "method": "GET",
+        "headers": {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then((res) => res.json());
+
+      let albumLink = songData.album.images[2].url;
+      $(".songs").append(`
+        <div class="song">
+          <img src="${albumLink}" alt="Album Art">
+          <div>
+            <div>${songData.name}</div>
+            <div>${songData.artists.map(artist => artist.name).join(", ")}</div>
+          </div>
+          <input id="${songData.id}-checkbox" type="checkbox" checked>
+        </div>
+      `);
+    });
+  });
+});
+
+$(".close").click(() => {
+  $(".create-playlist-modal").hide();
+  $(".body").css("filter", "none");
+});
+```
+
+The create playlist button will also send a message to the server requesting the list of merged songs.
+
+Server
+
+```js
+  socket.on("merge songs", () => {
+    let validMembers = [...io.sockets.adapter.rooms.get(socket.room)].filter(member => io.sockets.sockets.get(member).songData);
+    let songs = [...validMembers].map(roomMember => io.sockets.sockets.get(roomMember).songData).reduce((a, b) => a.filter(c => b.includes(c)));
+    socket.emit("merge songs", [validMembers.map(a => io.sockets.sockets.get(a).name), songs]);
+  });
+```
+
+`validMembers` will get all of the members in the room that have signed in and have sent their list of songs. The songs will then be merged and sent back to the client along with the list of valid members.
+
+The client will then take the song IDs and get the song data with the Spotify API. From that, it then list all of the songs along with the artists and the album art. The user can then uncheck the songs that they do not want to be added to the playlist.
+
+When the user clicks the `Create` button, the playlist will be created with the songs that the user has checked. If the user has not checked any songs, an alert will be shown and the playlist will not be created. The access token will also need to be given the permission to create a playlist.
+
+```js
+let scopes = ["user-library-read", "playlist-modify-private"];
+```
+
+```js
+$(".create-playlist-button").click(async () => {
+  let playlistName = $("#playlistName").val() || $("#playlistName").attr("placeholder");
+  let songs = $(".song").map((i, song) => {
+    if ($(song).find("input").is(":checked")) {
+      return $(song).find("input").attr("id").split("-")[0];
+    }
+  }).get();
+
+  let id = await fetch("https://api.spotify.com/v1/me", {
+    "method": "GET",
+    "headers": {
+      "Authorization": `Bearer ${token}`
+    }
+  }).then((res) => res.json()).then((data) => data.id);
+
+  let playlistID = await fetch(`https://api.spotify.com/v1/users/${id}/playlists`, {
+    "method": "POST",
+    "headers": {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    "Access-Control-Allow-Origin": "*",
+    "body": JSON.stringify({
+      "name": playlistName,
+      "public": false
+    })
+  }).then((res) => res.json()).then((data) => data.id);
+
+  fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+    "method": "POST",
+    "headers": {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    "Access-Control-Allow-Origin": "*",
+    "body": JSON.stringify({
+      "uris": songs.map(song => `spotify:track:${song}`)
+    })
+  }).then((res) => res.json()).then((res) => {
+    if (res.message == "No uris provided") {
+      alert("Playlist cannot be empty");
+      return;
+    }
+    
+    alert(`Created playlist ${playlistName}`);
+    $(".create-playlist-modal").hide();
+    $(".body").css("filter", "none");
+  });
+});
+```
 
 ## References
 

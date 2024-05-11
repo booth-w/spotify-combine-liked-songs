@@ -26,3 +26,59 @@ button:hover {
 .room-create-notice {
 	cursor: pointer;
 }
+
+#createPlaylist {
+	display: none;
+}
+
+.create-playlist-modal {
+	display: none;
+	position: fixed;
+	left: 0;
+	top: 0;
+	padding-top: 100px;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	background-color: rgba(0, 0, 0, 0.2);
+	overflow: auto;
+}
+.create-playlist-modal-content {
+	background-color: var(--bg-secondary);
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 50%;
+	font-size: 1.2em;
+}
+.create-playlist-modal-content > input {
+	width: 100%;
+}
+.modal-title {
+	margin-bottom: 20px;
+	font-size: 1.5rem;
+}
+.songs {
+	margin: 20px 0;
+}
+.song {
+	display: flex;
+	margin: 10px 0;
+	width: 100%;
+}
+.song img {
+	margin-right: 10px;
+}
+.song input {
+	margin-left: auto;
+}
+.close {
+	color: #ccc;
+	float: right;
+	font-size: 32px;
+	font-weight: bold;
+	cursor: pointer;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+}
