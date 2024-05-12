@@ -706,7 +706,7 @@ $(".create-playlist-button").click(async () => {
 
 ## Conclusion
 
-![Final Video](img/final.mkv)
+![Final Video](img/final.webm)
 ![Final Image](img/final.png)
 
 I was able to create a web application that allows users to sign in with their Spotify account, compare their music data, and create a playlist with the songs that they have in common. The application also allows users to create a room and invite other users to join the room. The application is useful for users who want to discover new music that they have in common with their friends or family members.
