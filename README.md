@@ -51,13 +51,11 @@ The aim of this project is to create a web application that will allow users to 
 - A way to access the user's music data from Spotify.
 - A way to compare the music data of two or more users.
 - A way to create a playlist with the songs that the users have in common as well as the ability to rename the playlist and add cover art.
-- If no cover art is provided, the application will combine the profile picture of the users.
-- A way to switch between light and dark mode.
 
 ### Limitations
 
 - The application will only work with Spotify accounts; accounts with other platforms like Apple Music or Tidal will not work.
-- During development, the app will be in development mode. This limits the number of users to 25 and those users need to manually added to the allow list (Spotify, n.d.-b).
+- During development, the app will be in development mode. This limits the number of users to 25 and those users need to manually added to the allow list (Spotify, n.d.-b). If I want to allow anyone to use the app, I will need to apply for an extended quota which will need to be reviewed by Spotify to ensure that the app is not using the API in a way that goes against the Terms of Service.
 
 ### Research into Existing Solutions
 
@@ -365,7 +363,7 @@ For this website, I will be using the font Source Sans Pro. To use the font, I w
 
 #### Nord Theme
 
-The application will have two themes: light and dark. The themes will be based on the Nord theme. The Nord theme is a color scheme that is used in many popular applications like Visual Studio Code, Vim, and Emacs (Nord, n.d.). It also has a GTK theme -- a cross-platform widget toolkit for creating graphical user interfaces (Lara, 2024).
+The colours used will be from the Nord theme. The Nord theme is a color scheme that is used in many popular applications like Visual Studio Code, Vim, and Emacs (Nord, n.d.). It also has a GTK theme -- a cross-platform widget toolkit for creating graphical user interfaces (Lara, 2024).
 
 ### Getting Spotify Data
 
