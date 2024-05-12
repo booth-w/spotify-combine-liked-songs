@@ -23,6 +23,7 @@
   - [Getting Spotify Data](#getting-spotify-data)
   - [Room member list](#room-members-list)
   - [Create Playlist](#create-playlist)
+- [Conclusion](#conclusion)
 - [References](#references)
 
 ## Gantt Chart
@@ -702,6 +703,15 @@ $(".create-playlist-button").click(async () => {
   });
 });
 ```
+
+## Conclusion
+
+![Final Video](img/final.mkv)
+![Final Image](img/final.png)
+
+I was able to create a web application that allows users to sign in with their Spotify account, compare their music data, and create a playlist with the songs that they have in common. The application also allows users to create a room and invite other users to join the room. The application is useful for users who want to discover new music that they have in common with their friends or family members.
+
+The application could be improved by allowing users to add songs to the playlist that they do not have in common. This would allow users to create a playlist with songs that they like but their friends might not have heard. The application could also be improved by allowing users to add custom cover art. This is done by sending a `PUT` request with a base64 encoded jpeg to the endpoint `/playlists/{playlist_id}/images`, as well as adding the scope `ugc-image-upload` to the token.
 
 ## References
 
