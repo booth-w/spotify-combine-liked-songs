@@ -4,6 +4,7 @@
 
 - [Gantt Chart](#gantt-chart)
 - [Abstract](#abstract)
+- [Wireframe](#wireframe)
 - [Introduction](#introduction)
   - [Project Requirements](#project-requirements)
   - [Limitations](#limitations)
@@ -35,6 +36,10 @@ Spotify is A music streaming service that has over 500 million active users worl
 Melody Merge is a web application that will allow two or more users to sign in with their Spotify account. When the users have signed in, they will be able to see the songs that they have in common. The application will also allow the users to create a playlist with those songs. The application will use the Spotify API to authenticate users and access their music data. The server will be created using Node.js and Express.js, and the real-time connection between the clients and the server will be handled using Socket.io.
 
 The aim of this project is to create a web application that will allow users to compare their music data and create a playlist with the songs that they have in common. The application will be useful for users who want to discover new music that they have in common with their friends or family members.
+
+## Wireframe
+
+![Wireframe](img/wireframe.png)
 
 ## Introduction
 
